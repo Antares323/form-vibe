@@ -129,7 +129,7 @@ export default {
     },
     {
       name: 'Account',
-      url: '/dashboard',
+      url: '/account',
       icon: 'User',
       badge: {
         variant: 'success',
