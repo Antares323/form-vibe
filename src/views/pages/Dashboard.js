@@ -44,6 +44,22 @@ class Dashboard extends Component {
     });
   };
 
+  submitForm(e) {
+    e.preventDefault();
+    const { validate } = this.state
+    let isValid = true
+
+    for(let key in validate) {
+      if (validate[key] !== '') {
+        isValid = false
+      }
+    }
+
+    if (!isValid) {
+
+    }
+  }
+
   validateEmail(e) {
     const emailRex =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -99,7 +115,7 @@ class Dashboard extends Component {
   validateRoles(e) {  
     const { validate } = this.state;
 
-    if (e.target.value == 'Chouse your role' || e.target.value == '') {
+    if (e.target.value === 'Chouse your role' || e.target.value === '') {
       validate.rolesState = 'has-danger'
     } else {
       validate.rolesState = 'has-success'
@@ -120,16 +136,15 @@ class Dashboard extends Component {
     this.setState({ validate })
   }
 
-  submitForm(e) {
-    e.preventDefault();
-    console.log(`firstName: ${this.state.firstName}`);
-    console.log(`lastName: ${this.state.lastName}`);
-    console.log(`phoneNumber: ${this.state.phoneNumber}`);
-    console.log(`email: ${this.state.email}`);
-    console.log(`roles: ${this.state.roles}`);
-    console.log(`notes: ${this.state.notes}`);
-  }
-  
+  handleImg(e) {
+    let { img } = this.state;
+    if(e.target.files) {
+      img = URL.createObjectURL(e.target.files[0])  
+    } 
+    
+    this.setState({ img })
+  } 
+
   render() {
     return (
       <div>
@@ -141,10 +156,10 @@ class Dashboard extends Component {
           </Col>
         </Row>
         <Form className="form" onSubmit={(e) => this.submitForm(e)}>
-          <Row className="justify-content-md-center" form>
+          <Row className="justify-content-md-center">
             <Col md={4}>
               <FormGroup>
-                <Label for='firstName'>First Name</Label>
+                <Label for='firstName'>First Name:</Label>
                 <Input
                   type="text"
                   name="firstName"
@@ -164,7 +179,7 @@ class Dashboard extends Component {
                 <FormFeedback valid>
                   That's a correct first name.
                 </FormFeedback>
-                <FormText>Your first name must be not less than 2 simvols.</FormText>
+                <FormText>First name must be not less than 2 simvols.</FormText>
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -189,12 +204,12 @@ class Dashboard extends Component {
                 <FormFeedback valid>
                   That's a correct last name.
                 </FormFeedback>
-                <FormText>Your last name must be not less than 2 simvols.</FormText>
+                <FormText>Last name must be not less than 2 simvols.</FormText>
               </FormGroup>
             </Col>
           </Row>
           
-          <Row className="justify-content-md-center" form>
+          <Row className="justify-content-md-center">
             <Col md={4}>
               <FormGroup>
                 <Label for='phoneNumber'>Phone Number:</Label>
@@ -217,7 +232,7 @@ class Dashboard extends Component {
                 <FormFeedback valid>
                   That's a correct phone number.
                 </FormFeedback>
-                <FormText>Your phone number must be not less than 8 simvols.</FormText>
+                <FormText>Phone number must be not less than 8 simvols.</FormText>
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -242,12 +257,12 @@ class Dashboard extends Component {
                 <FormFeedback valid>
                   That's a correct email.
                 </FormFeedback>
-                <FormText>Your email must be with '@'.</FormText>
+                <FormText>Email must be with '@'.</FormText>
               </FormGroup>
             </Col>
           </Row>
 
-          <Row className="justify-content-md-center" form>
+          <Row className="justify-content-md-center">
             <Col md={4}>
               <FormGroup>
                 <Label for='roles'>Roles:</Label>
@@ -279,15 +294,21 @@ class Dashboard extends Component {
                 <FormFeedback valid>
                   Your choused role.
                 </FormFeedback>
-                <FormText>Your need to chouse role.</FormText>
+                <FormText>Need to chouse role.</FormText>
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup row>
-                <Label for="form__img">Image(avatar):</Label>
+                <Label for="form__img">
+                  Image(avatar):
+                  <img src={this.state.img} alt="" width='36px' height='36px'/>
+                </Label>
                 <Input
-                  value={this.state.img}
-                  onChange={this.changeHandler}
+                  value={this.img}
+                  onChange={(e) => {
+                    this.handleImg(e)
+                  }}
+                  accept=".png, .jpg, .jpeg"
                   id="form__img"
                   name="form__img"
                   placeholder="Your image ..."
@@ -295,11 +316,12 @@ class Dashboard extends Component {
                   className="form-control"
                 />
                 <FormText>Chouse your avatar.</FormText>
+                
               </FormGroup>
             </Col>
           </Row>
 
-          <Row className="justify-content-md-center" form>
+          <Row className="justify-content-md-center">
             <Col md={6}>
               <FormGroup>
                 <Label for='notes'>Notes:</Label>
@@ -322,11 +344,11 @@ class Dashboard extends Component {
                 <FormFeedback valid>
                   That's a correct notes.
                 </FormFeedback>
-                <FormText>Your note must be not less than 5 simvols.</FormText>
+                <FormText>Notes must be not less than 5 simvols.</FormText>
               </FormGroup>
             </Col>
           </Row>
-          <Row className="justify-content-md-center" form>
+          <Row className="justify-content-md-center">
             <Button>Create</Button>
           </Row>
         </Form>

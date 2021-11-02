@@ -1,0 +1,64 @@
+{
+    "usersData": [
+        {
+            "id": 1,
+            "img": "./img/avatar.png",
+            "firstName": "Alex",
+            "lastName": "Mayba",
+            "phoneNumber": "0942232567",
+            "email": "qwdfsdfty@gmail.com",
+            "roles": "Admin",
+            "notes": "Just simple admin on this site"
+        },
+        {
+            "id": 2,
+            "img": "./img/avatar.png",
+            "firstName": "Max",
+            "lastName": "Saplex",
+            "phoneNumber": "0992232367",
+            "email": "dsfdsrty@gmail.com",
+            "roles": "Regular",
+            "notes": "Just simple Regular on this site"
+        },
+        {
+            "id": 3,
+            "img": "./img/avatar.png",
+            "firstName": "Vitalya",
+            "lastName": "Pronin",
+            "phoneNumber": "0502232567",
+            "email": "asdf@gmail.com",
+            "roles": "Admin",
+            "notes": "Just simple admin on this site"
+        },
+        {
+            "id": 4,
+            "img": "./img/avatar.png",
+            "firstName": "Ruslan",
+            "lastName": "Kravec",
+            "phoneNumber": "0992123567",
+            "email": "qwerty@gmail.com",
+            "roles": "Regular",
+            "notes": "Just simple Regular on this site"
+        },
+        {
+            "id": 5,
+            "img": "./img/avatar.png",
+            "firstName": "Oleg",
+            "lastName": "Grova",
+            "phoneNumber": "0922121167",
+            "email": "qwewqey@gmail.com",
+            "roles": "Regular",
+            "notes": "Just simple Regular on this site"
+        },
+        {
+            "id": 6,
+            "img": "./img/avatar.png",
+            "firstName": "Anton",
+            "lastName": "Borshch",
+            "phoneNumber": "0504532167",
+            "email": "qWaey@gmail.com",
+            "roles": "Admin",
+            "notes": "Test notesfor site"
+        }
+    ]
+}
