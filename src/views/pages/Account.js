@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import UsersDataTable from './UsersDataTable/UsersDataTable';
 import UserForm from './UserForm/UserForm';
 
 class Account extends Component {
@@ -8,6 +9,7 @@ class Account extends Component {
     return (
       <div>
         <UserForm />
+        <UsersDataTable />
       </div>
     );
   }

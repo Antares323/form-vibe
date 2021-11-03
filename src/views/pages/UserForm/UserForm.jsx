@@ -68,11 +68,9 @@ const UserForm = () => {
             }
         }
 
-        if (!isValid) {
-
+        if (isValid) {
+            
         }
-
-        console.log(isValid)
     }
 
     return (
@@ -243,7 +241,6 @@ const UserForm = () => {
                                 <img src={dataUser.img} alt="" width='36px' height='36px'/>
                             </Label>
                             <Input
-                                value={dataUser.img}
                                 onChange={(e) => {
                                     handleImg(e)
                                 }}
