@@ -10,6 +10,7 @@ import {
     FormFeedback,
     FormText
 } from 'reactstrap';
+import { postData } from '../LocalRequest/postUsers';
 import { validation } from '../UserForm/module/validation'
 
 const UserForm = () => {
@@ -69,7 +70,18 @@ const UserForm = () => {
         }
 
         if (isValid) {
-            
+            let user = {
+                id: 1,
+                firstName: dataUser.firstName,
+                lastName: dataUser.lastName,
+                phoneNumber: dataUser.phoneNumber,
+                email: dataUser.email,
+                roles: dataUser.roles,
+                notes: dataUser.notes,
+                img: dataUser.img
+            }
+            console.log(dataUser)
+            postData(user)
         }
     }
 

@@ -1,16 +1,19 @@
-export const getData = async (data) => {
-    setLoading(true)
-    fetch('db.json',{
-        headers : { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+export const postData = (url, data, callback) => {
+    const xhr = new XMLHttpRequest()
+
+    xhr.open('POST', url, true)
+    xhr.setRequestHeader("Accept", "application/json")
+    xhr.setRequestHeader("Content-Type", "application/json")
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                callback('Success')
+            }
+            else {
+                callback('Error')
+            }
         }
-    })
-    .then(response => {
-        return response.json();
-    })
-    .then(myJson => {
-        setUsers(myJson.usersData)
-    });
-    setLoading(false)
+    }
+
+    xhr.send(JSON.stringify(data))
 }
