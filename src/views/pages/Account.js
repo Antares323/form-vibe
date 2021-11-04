@@ -1,80 +1,77 @@
-import React, { Component } from 'react';
+import React, { Component, } from 'react';
 import { Button, Col, Form, FormFeedback, FormGroup, FormText, Input, Label, Row, Table } from 'reactstrap';
 
-import { token } from '../../assets/token.json'
-
-const url = 'http://crm.local'
-const userId = 1
+let option = true
 
 class Account extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      id: '',
-      name: '',
-      adress: '',
+      firstName: '',
+      lastName: '',
+      email: '',
       phone: '',
-      head_name: '',
-      activity: '',
-      createdAt: '',
-      updatedAt: '',
+      roles: '',
+      notes: '',
       validate: {
-        nameState: '',
-        adressState: '',
+        firstNameState: '',
+        lastNameState: '',
+        emailState: '',
         phoneState: '',
-        head_nameState: '',
-        activityState: ''
+        rolesState: '',
+        notesState: ''
       },
-      fields: {
-        nameField: '',
-        adressField: '',
-        phoneField: '',
-        head_nameField: '',
-        activityField: ''
-      }
+      customersData: []
     }
+    this.handleChange = this.handleChange.bind(this);
   }
 
   validation = (e) => {
     const { validate } = this.state
     const regex = {
-        name: /^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/,
+        mail: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        username: /^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/,
         phone: /^(\s*)?(\+)?([- _():=+]?\d[- _():=+]?){8,14}(\s*)?$/
     }
-
     switch (e.target.name) {
-        case 'name':
-            if (regex.name.test(e.target.value)) {
-                validate.nameState = 'has-success' 
-            } else validate.nameState = 'has-danger'
+        case 'firstName':
+            if (regex.username.test(e.target.value)) {
+              validate.firstNameState = 'has-success' 
+            } else validate.firstNameState = 'has-danger'
             this.setState(validate)
             break
-        case 'adress':
-            if (e.target.value.length < 8 && e.target.value !== '') {
-                validate.adressState = 'has-danger'
-            } else validate.adressState = 'has-success'
+        case 'lastName':
+            if (regex.username.test(e.target.value)) {
+              validate.lastNameState = 'has-success' 
+            } else validate.lastNameState = 'has-danger'
             this.setState(validate)
             break
         case 'phone':
-            if (regex.phone.test(e.target.value && e.target.value !== '')) {
-                validate.phoneState = 'has-success'
+            if (regex.phone.test(e.target.value)) {
+              validate.phoneState = 'has-success'
             } else validate.phoneState = 'has-danger'
             this.setState(validate)
             break
-        case 'head_name':
-            if (e.target.value.length < 4 && e.target.value !== '') {
-                validate.head_nameState = 'has-danger'
-            } else validate.head_nameState = 'has-success'
+        case 'email':
+            if (regex.mail.test(e.target.value)) {
+              validate.emailState = 'has-success'
+            } else validate.emailState = 'has-danger'
             this.setState(validate)
             break
-        case 'activity':
-            if (e.target.value.length <= 5 && e.target.value !== '') {
-                validate.activityState = 'has-danger'
-            } else validate.activityState = 'has-success'
+        case 'roles':
+            if (e.target.value === 'Chouse your role' || e.target.value === '') {
+              validate.rolesState = 'has-danger'
+            } else validate.rolesState = 'has-success'
+            this.setState(validate)
+            break
+        case 'notes':
+            if (e.target.value.length <= 5 || e.target.value === '') {
+              validate.notesState = 'has-danger'
+            } else validate.notesState = 'has-success'
             this.setState(validate)
             break
         default: 
-          break
+        break
     }
   }
 
@@ -84,7 +81,6 @@ class Account extends Component {
     let countErrors = 0
 
     for (let key in validate) {
-      console.log(countErrors)
       
       if(validate[key] === '' || validate[key] === 'has-danger') {
         countErrors++
@@ -92,52 +88,24 @@ class Account extends Component {
     }
 
     if (!countErrors > 0) {
-      let { nameField, adressField, phoneField, head_nameField, activityField } = this.state.fields
+      let { firstName, lastName, email, phone, roles, notes } = this.state
 
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-type': 'appleication/json; charset=UTF-8',
-        },
-        body: JSON.stringify({
-          name: nameField,
-          adress: adressField,
-          phone: phoneField,
-          head_name: head_nameField,
-          activity: activityField,
+        var data = new FormData()
+            data.append('firstName', firstName)
+            data.append('lastName', lastName)
+            data.append('phoneNumber', phone)
+            data.append('email', email)
+            data.append('notes', roles)
+            data.append('roles', notes)
+
+        fetch('db.json', {
+            method: 'POST',
+            body: data
         })
-      }
-
-      fetch(`${url}/api/customer/create/${userId}?access-token=${token}`, options)
-      .then(response => {
-        if (response.status === 200) {
-          console.log('success')
-          this.setState({
-            name: this.state.fields.nameField,
-            adress: this.state.fields.adressField,
-            phone: this.state.fields.phoneField,
-            head_name: this.state.fields.head_nameField,
-            activity: this.state.fields.activityField,
-          })
-        } else console.loh('error')
-      })
+        .then(response => response.json)
+        .then(data => console.log(data))
     } else console.log('valid error: ', countErrors)
-  }
-
-  getCustomers = async () => {
-   await fetch(`${url}/api/customers?acess-token=${token}`)
-    .then(response => response.json())
-    .then(customersData => {
-      let customer = customersData[0].filter(el => el.id === userId)
-      console.log(customer)
-      // this.setState({
-      //   name: this.state.fields.nameField,
-      //   adress: this.state.fields.adressField,
-      //   phone: this.state.fields.phoneField,
-      //   head_name: this.state.fields.head_nameField,
-      //   activity: this.state.fields.activityField,
-      // })
-    })
+    this.setState(prev => ({...prev, data}))
   }
   
   handleChange = (event) => {
@@ -150,32 +118,90 @@ class Account extends Component {
     })
   }
 
-  render() {
-    let { name, adress, phone, head_name, activity } = this.state
-    let { nameState, adressState, phoneState, head_nameState, activityState } = this.state.validate
+  handleImg = (e) => {
+    let { img } = this.state;
+    if(e.target.files) {
+        img = URL.createObjectURL(e.target.files[0])  
+    } 
+    
+    this.setState({ img })
+  } 
 
-    return (
-      <div>
+  createTableRow = (data) => {
+    let { customersData } = this.state
+    let table = document.querySelector('.customerTable')
+    let customer = (
+        `<tr key=${data.id}>
+            <th>${data.id}</th>
+            <th><img src='${data.img}' width='32px'/></th>
+            <th>${data.firstName}</th>
+            <th>${data.lastName}</th>
+            <th>${data.email}</th>
+            <th>${data.phone}</th>
+            <th>${data.roles}</th>
+        </tr>`
+    )
+    table.innerHTML += customer
+    customersData = customer
+    this.setState(prev => ({...prev, customersData}))
+  }
+
+  getCustomers = async () => {
+    await fetch('db.json')
+    .then(response => response.json())
+    .then(customers => {
+        let data = customers.usersData
+        data.map(d => this.createTableRow(d))
+    })
+  }
+
+  uploadImage = async (e) => {
+    const file = e.target.files[0]
+    const base64 = await this.convertToBase64(file)
+    this.setState({ imgField: base64 })
+  }
+
+  convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(file)
+
+      fileReader.onload = () => {
+        resolve(fileReader.result)
+      }
+
+      fileReader.onerror = (err) => {
+        reject(err)
+      }
+    })
+  }
+
+
+  render() {
+    let { firstName, lastName, email, phone, roles, notes, img } = this.state
+    const { firstNameState, lastNameState, emailState, phoneState, rolesState, notesState } = this.state.validate
+    return(
+    <div>
         <Row className="justify-content-md-center text-center">
           <Col md={6}>
               <div className="home-hero">
               <h1>Create User</h1>
               </div>
           </Col>
-          </Row>
-          <Form className="form" onSubmit={(e) => this.submit(e)}>
+        </Row>
+        <Form className="form" onSubmit={(e) => this.submit(e)}>
           <Row className="justify-content-md-center">
               <Col md={4}>
                   <FormGroup>
-                      <Label for='name'>Name:</Label>
+                      <Label for='firstName'>First Name:</Label>
                       <Input
                           type="text"
-                          name="name"
-                          id="name"
+                          name="firstName"
+                          id="firstName"
                           placeholder="First name ..."
-                          valid={nameState === "has-success"}
-                          invalid={nameState === "has-danger"}
-                          value={name}
+                          valid={firstNameState === "has-success"}
+                          invalid={firstNameState === "has-danger"}
+                          value={firstName}
                           onChange={(e) => {
                               this.validation(e);
                               this.handleChange(e);
@@ -185,27 +211,27 @@ class Account extends Component {
                           Looks like your input is'n correct.
                       </FormFeedback>
                       <FormFeedback valid>
-                          That's a correct name.
+                          That's a correct first name.
                       </FormFeedback>
                       <FormText>
-                          Name must be not less than 2 simvols.
+                          First name must be not less than 2 simvols.
                       </FormText>
                   </FormGroup>
               </Col>
               <Col md={4}>
                   <FormGroup>
-                      <Label for='adress'>Adress:</Label>
+                      <Label for='lastName'>Last Name:</Label>
                       <Input
                           type="text"
-                          name="adress"
-                          id="adress"
+                          name="lastName"
+                          id="lastName"
                           placeholder="Last name ..."
-                          valid={adressState === "has-success"}
-                          invalid={adressState === "has-danger"}
-                          value={adress}
+                          valid={lastNameState === "has-success"}
+                          invalid={lastNameState === "has-danger"}
+                          value={lastName}
                           onChange={(e) => {
-                              this.validation(e);
-                              this.handleChange(e);
+                            this.validation(e);
+                            this.handleChange(e);
                           }}
                       />
                       <FormFeedback>
@@ -228,14 +254,14 @@ class Account extends Component {
                       <Input
                           type="text"
                           name="phone"
-                          id="phoneNumber"
+                          id="phone"
                           placeholder="Phone number ..."
                           valid={phoneState === "has-success"}
                           invalid={phoneState === "has-danger"}
                           value={phone}
                           onChange={(e) => {
-                              this.validation(e);
-                              this.handleChange(e);
+                            this.validation(e);
+                            this.handleChange(e);
                           }}
                       />
                       <FormFeedback>
@@ -251,18 +277,18 @@ class Account extends Component {
               </Col>
               <Col md={4}>
                   <FormGroup>
-                      <Label for='head_name'>Head Name:</Label>
+                      <Label for='email'>Email:</Label>
                       <Input
-                          type="text"
-                          name="head_name"
-                          id="head_name"
-                          placeholder="Head name ..."
-                          valid={head_nameState === "has-success"}
-                          invalid={head_nameState === "has-danger"}
-                          value={head_name}
+                          type="email"
+                          name="email"
+                          id="email"
+                          placeholder="Email ..."
+                          valid={emailState === "has-success"}
+                          invalid={emailState === "has-danger"}
+                          value={email}
                           onChange={(e) => {
-                              this.validation(e);
-                              this.handleChange(e);
+                            this.validation(e);
+                            this.handleChange(e);
                           }}
                       />
                       <FormFeedback>
@@ -281,19 +307,29 @@ class Account extends Component {
           <Row className="justify-content-md-center">
               <Col md={4} className='my-2'>
                   <FormGroup>
-                      <Label for='activity'>Activity:</Label>
+                      <Label for='roles'>Roles:</Label>
                       <Input
-                          type="text"
-                          name="activity"
-                          id="activity"
-                          valid={activityState === "has-success"}
-                          invalid={activityState === "has-danger"}
-                          value={activity}
+                          type="select"
+                          name="roles"
+                          id="roles"
+                          valid={rolesState === "has-success"}
+                          invalid={rolesState === "has-danger"}
+                          value={roles}
                           onChange={(e) => {
-                              this.validation(e);
-                              this.handleChange(e);
+                            this.validation(e);
+                            this.handleChange(e);
                           }}
-                      />
+                      >
+                          <option>
+                              Chouse your role
+                          </option>
+                          <option>
+                              Admin
+                          </option>
+                          <option>
+                              Regular
+                          </option>
+                      </Input>
                       <FormFeedback>
                           Looks like your input is'n correct.
                       </FormFeedback>
@@ -305,15 +341,16 @@ class Account extends Component {
                       </FormText>
                   </FormGroup>
               </Col>
-              {/* <Col md={4}>
+              <Col md={4}>
                   <FormGroup row>
                       <Label for="form__img">
                           Image(avatar):
-                          <img src={dataUser.img} alt="" width='36px' height='36px'/>
+                          <img src={img} alt="" width='36px' height='36px'/>
                       </Label>
                       <Input
                           onChange={(e) => {
-                              handleImg(e)
+                            this.handleImg(e)
+                            this.uploadImage(e)
                           }}
                           accept=".png, .jpg, .jpeg"
                           id="form__img"
@@ -326,42 +363,77 @@ class Account extends Component {
                           Chouse your avatar.
                       </FormText>
                   </FormGroup>
-              </Col> */}
+              </Col>
+          </Row>
+
+          <Row className="justify-content-md-center">
+              <Col md={6}>
+              <FormGroup>
+                  <Label for='notes'>Notes:</Label>
+                  <Input
+                      type="textarea"
+                      name="notes"
+                      id="notes"
+                      placeholder="Notes ..."
+                      valid={notesState === "has-success"}
+                      invalid={notesState === "has-danger"}
+                      value={notes}
+                      onChange={(e) => {
+                        this.validation(e);
+                        this.handleChange(e);
+                      }}
+                  />
+                  <FormFeedback>
+                      Your type less than 5 simvols.
+                  </FormFeedback>
+                  <FormFeedback valid>
+                      That's a correct notes.
+                  </FormFeedback>
+                  <FormText>
+                      Notes must be not less than 5 simvols.
+                  </FormText>
+              </FormGroup>
+              </Col>
           </Row>
           <Row className="justify-content-md-center">
               <Button>Create</Button>
           </Row>
-      </Form>
+        </Form>
 
-      <Row className='mt-5'>
-        <Table dark>
-            <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Adress</th>
-                  <th>Phone</th>
-                  <th>Head Name</th>
-                  <th>Activity</th>
-                </tr>
-            </thead>
-            <tbody>
-                {/* {
-                  dataPost.map(user => (
-                    <tr key={user.id}>
-                        <th>{user.id}</th>
-                        <th><img src={user.img} width='26px'/></th>
-                        <th>{user.firstName}</th>
-                        <th>{user.lastName}</th>
-                        <th>{user.phoneNumber}</th>
-                        <th>{user.email}</th>
-                        <th>{user.roles}</th>
+        <Row className='mt-5'>
+            <h2>Customers Table</h2>
+            <Table dark>
+                <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Avatar</th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Phone</th>
+                      <th>Email</th>
+                      <th>Role</th>
                     </tr>
-                  ))
-                } */}
-              </tbody>
-          </Table>
+                </thead>
+                <tbody className='customerTable'>
+                    
+                </tbody>
+            </Table>
         </Row>
+        <Button onClick={(e) => {
+            
+            let table = document.querySelector('.customerTable')
+            if (option) {
+              option = false
+              this.getCustomers()  
+              e.target.textContent = 'Remove Customers'
+            } else {
+              option = true
+              while (table.firstChild) {
+                table.removeChild(table.firstChild)
+              }
+              e.target.textContent = 'Get Customers'
+            }
+        }}>Get Customers</Button>
       </div>
     );
   }
