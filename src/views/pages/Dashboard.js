@@ -15,6 +15,7 @@ class Dashboard extends Component {
       phone: '',
       head_name: '',
       activity: '',
+      img: '',
       createdAt: '',
       updatedAt: '',
       validate: {
@@ -93,8 +94,7 @@ class Dashboard extends Component {
     }
 
     if (!countErrors > 0) {
-      let { name, email, adress, phone, head_name, activity } = this.state
-        console.log(this.state)
+      let { name, email, adress, phone, head_name, activity, img } = this.state
         var data = new FormData()
             data.append('name', name)
             data.append('email', email)
@@ -102,8 +102,9 @@ class Dashboard extends Component {
             data.append('address', adress)
             data.append('activity', head_name)
             data.append('head_name', activity)
+            data.append('img', img)
 
-        fetch(`${url}/api/customer/create?access-token=${token}`, {
+        fetch(`http://crm.local/api/customer?access-token=VkYrrFC-Ha8SU2YqfOrj1ug5iBH7MujnnaubuYJYNe79ePtz4Exswc7PJdZxQXYG`, {
             method: 'POST',
             body: data
         })
@@ -114,7 +115,7 @@ class Dashboard extends Component {
   
   handleChange = (event) => {
     const { target } = event
-    const value = target.value
+    const value = target.type === 'file' ? target.src : target.value
     const { name } = target
 
     this.setState({
@@ -122,8 +123,25 @@ class Dashboard extends Component {
     })
   }
 
-  viewTable = () => {
-    
+  uploadImage = async (e) => {
+    const file = e.target.files[0]
+    const base64 = await this.convertToBase64(file)
+    this.setState({ img: base64 })
+  }
+
+  convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(file)
+
+      fileReader.onload = () => {
+        resolve(fileReader.result)
+      }
+
+      fileReader.onerror = (err) => {
+        reject(err)
+      }
+    })
   }
 
   createTableRow = (data) => {
@@ -131,6 +149,7 @@ class Dashboard extends Component {
         `<tr key=${data.id}>
             <th>${data.id}</th>
             <th>${data.name}</th>
+            <th>${data.img}</th>
             <th>${data.email}</th>
             <th>${data.address}</th>
             <th>${data.phone}</th>
@@ -154,7 +173,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    let { name, adress, phone, head_name, activity, email } = this.state
+    let { name, adress, phone, head_name, activity, email, img } = this.state
     let { nameState, adressState, phoneState, head_nameState, activityState, emailState } = this.state.validate
     
     return (
@@ -162,7 +181,7 @@ class Dashboard extends Component {
         <Row className="justify-content-md-center text-center">
           <Col md={6}>
               <div className="home-hero">
-              <h1>Create User</h1>
+              <h1>Create Customer</h1>
               </div>
           </Col>
           </Row>
@@ -336,15 +355,16 @@ class Dashboard extends Component {
                       </FormText>
                   </FormGroup>
               </Col>
-              {/* <Col md={4}>
+          </Row>
+          <Row className="justify-content-md-center">
+            <Col md={4}>
                   <FormGroup row>
                       <Label for="form__img">
                           Image(avatar):
-                          <img src={dataUser.img} alt="" width='36px' height='36px'/>
                       </Label>
                       <Input
                           onChange={(e) => {
-                              handleImg(e)
+                              this.uploadImage(e)
                           }}
                           accept=".png, .jpg, .jpeg"
                           id="form__img"
@@ -357,7 +377,10 @@ class Dashboard extends Component {
                           Chouse your avatar.
                       </FormText>
                   </FormGroup>
-              </Col> */}
+              </Col>
+              <Col md={2}>
+                <img src={img} alt="" width='36px' height='36px'/>
+              </Col>
           </Row>
           <Row className="justify-content-md-center">
               <Button>Create</Button>
@@ -371,6 +394,7 @@ class Dashboard extends Component {
                     <tr>
                     <th>#</th>
                     <th>Name</th>
+                    <th>Avatar</th>
                     <th>Email</th>
                     <th>Adress</th>
                     <th>Phone</th>

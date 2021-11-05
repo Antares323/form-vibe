@@ -13,6 +13,7 @@ class Account extends Component {
       phone: '',
       roles: '',
       notes: '',
+      img: '',
       validate: {
         firstNameState: '',
         lastNameState: '',
@@ -107,13 +108,6 @@ class Account extends Component {
         this.createTableRow({id: 7, firstName, lastName, email, phone, roles, notes, img})
     } else console.log('valid error: ', countErrors)
     this.setState(prev => ({...prev, data}))
-    firstName = '' 
-    lastName = '' 
-    email = ''
-    phone = '' 
-    roles = '' 
-    notes = '' 
-    img = ''
   }
   
   handleChange = (event) => {
@@ -167,7 +161,8 @@ class Account extends Component {
   uploadImage = async (e) => {
     const file = e.target.files[0]
     const base64 = await this.convertToBase64(file)
-    this.setState({ imgField: base64 })
+    this.setState({ img: base64 })
+    console.log(this.state.img)
   }
 
   convertToBase64 = (file) => {
