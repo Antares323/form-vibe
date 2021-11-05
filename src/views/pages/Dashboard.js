@@ -1,8 +1,9 @@
-import React, { Component, useEffect } from 'react';
+import React, { Component } from 'react';
 import { Button, Col, Form, FormFeedback, FormGroup, FormText, Input, Label, Row, Table } from 'reactstrap';
 
 const token = 'VkYrrFC-Ha8SU2YqfOrj1ug5iBH7MujnnaubuYJYNe79ePtz4Exswc7PJdZxQXYG'
 const url = 'http://crm.local'
+let option = true
 
 class Dashboard extends Component {
   constructor(props) {
@@ -121,8 +122,11 @@ class Dashboard extends Component {
     })
   }
 
+  viewTable = () => {
+    
+  }
+
   createTableRow = (data) => {
-    let { customersData } = this.state
     let customer = (
         `<tr key=${data.id}>
             <th>${data.id}</th>
@@ -134,8 +138,9 @@ class Dashboard extends Component {
             <th>${data.activity}</th>
         </tr>`
     )
-    customersData.push(customer)
-    this.setState(customersData)
+    this.setState(data => ({...data, customersData: customer}))
+    let table = document.querySelector('.customerTable')
+    return table.innerHTML += this.state.customersData
   }
 
   getCustomers = async () => {
@@ -145,11 +150,8 @@ class Dashboard extends Component {
         let data = customers[0]
         return data.map(d => this.createTableRow(d))
     })
-    useEffect(() => {
-        this.getCustomers()
-    }, [])
+    
   }
-
 
   render() {
     let { name, adress, phone, head_name, activity, email } = this.state
@@ -377,12 +379,23 @@ class Dashboard extends Component {
                     </tr>
                 </thead>
                 <tbody className='customerTable'>
-                    
+                   
                 </tbody>
             </Table>
         </Row>
-        <Button onClick={() => {
-            this.getCustomers()
+        <Button onClick={(e) => {
+            let table = document.querySelector('.customerTable')
+            if (option) {
+              option = false
+              this.getCustomers()  
+              e.target.textContent = 'Remove Customers'
+            } else {
+              option = true
+              while (table.firstChild) {
+                table.removeChild(table.firstChild)
+              }
+              e.target.textContent = 'Get Customers'
+            }
         }}>Get Customers</Button>
       </div>
     );

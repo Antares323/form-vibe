@@ -78,6 +78,7 @@ class Account extends Component {
   submit = (e) => {
     e.preventDefault()
     const { validate } = this.state
+    let { firstName, lastName, email, phone, roles, notes, img } = this.state
     let countErrors = 0
 
     for (let key in validate) {
@@ -88,8 +89,6 @@ class Account extends Component {
     }
 
     if (!countErrors > 0) {
-      let { firstName, lastName, email, phone, roles, notes } = this.state
-
         var data = new FormData()
             data.append('firstName', firstName)
             data.append('lastName', lastName)
@@ -97,6 +96,7 @@ class Account extends Component {
             data.append('email', email)
             data.append('notes', roles)
             data.append('roles', notes)
+            data.append('img', img)
 
         fetch('db.json', {
             method: 'POST',
@@ -104,8 +104,16 @@ class Account extends Component {
         })
         .then(response => response.json)
         .then(data => console.log(data))
+        this.createTableRow({id: 7, firstName, lastName, email, phone, roles, notes, img})
     } else console.log('valid error: ', countErrors)
     this.setState(prev => ({...prev, data}))
+    firstName = '' 
+    lastName = '' 
+    email = ''
+    phone = '' 
+    roles = '' 
+    notes = '' 
+    img = ''
   }
   
   handleChange = (event) => {
@@ -133,7 +141,7 @@ class Account extends Component {
     let customer = (
         `<tr key=${data.id}>
             <th>${data.id}</th>
-            <th><img src='${data.img}' width='32px'/></th>
+            <th><img src='${data.img}' width='32px' height='32px'/></th>
             <th>${data.firstName}</th>
             <th>${data.lastName}</th>
             <th>${data.email}</th>
@@ -143,7 +151,8 @@ class Account extends Component {
     )
     table.innerHTML += customer
     customersData = customer
-    this.setState(prev => ({...prev, customersData}))
+    this.setState(prev => ({...prev, customersData: customer}))
+    console.log(customersData)
   }
 
   getCustomers = async () => {
@@ -189,7 +198,7 @@ class Account extends Component {
               </div>
           </Col>
         </Row>
-        <Form className="form" onSubmit={(e) => this.submit(e)}>
+        <Form className="form" onSubmit={(e) => {this.submit(e)}}>
           <Row className="justify-content-md-center">
               <Col md={4}>
                   <FormGroup>
@@ -420,7 +429,6 @@ class Account extends Component {
             </Table>
         </Row>
         <Button onClick={(e) => {
-            
             let table = document.querySelector('.customerTable')
             if (option) {
               option = false
